@@ -1,0 +1,52 @@
+{
+  "name": "changd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "prod": "node server.js",
+    "prodcron": "node cron.js",
+    "dev": "nodemon server.js",
+    "devcron": "nodemon cron.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paschmann/changd.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paschmann/changd/issues"
+  },
+  "homepage": "https://github.com/paschmann/changd#readme",
+  "dependencies": {
+    "aws-sdk": "^2.944.0",
+    "bcryptjs": "^2.4.3",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
+    "chance": "^1.1.7",
+    "chrome-aws-lambda": "^10.0.0",
+    "cors": "^2.8.5",
+    "cron": "^1.8.2",
+    "cross-var": "^1.1.0",
+    "crypto": "^1.0.1",
+    "diff": "^5.0.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "http-proxy-middleware": "^2.0.0",
+    "is-reachable": "^5.0.0",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.29.1",
+    "node-fetch": "^3.1.0",
+    "nodemailer": "^6.6.2",
+    "nodemailer-ses-transport": "^1.5.1",
+    "nodemon": "^2.0.15",
+    "pg-promise": "^10.10.2",
+    "pixelmatch": "^5.2.1",
+    "puppeteer": "1.10.0",
+    "puppeteer-core": "^10.1.0",
+    "request": "^2.88.2",
+    "sharp": "^0.29.3"
+  }
+}

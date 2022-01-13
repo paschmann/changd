@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Page should render without throwing an error 1`] = `ShallowWrapper {}`;

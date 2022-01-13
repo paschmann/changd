@@ -1,0 +1,6 @@
+node_modules
+.env
+deployment_key.txt
+deployment_scripts
+server/screenshots
+db
