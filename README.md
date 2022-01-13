@@ -1,8 +1,8 @@
 [![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/paschmann/changd/)
 
-//Feature Banner
+<img src="./frontend/src/assets/screenshot-1.png" width="100%">
 
-# Changd
+###
 
 Changd is a open source web monitoring application and a free alternative to ChangeTower.com, Hexowatch.com and other SaaS based solutions. Changd can currently be used for automated monitoring visual site changes (screenshots), XPath's or API's.
 
@@ -38,11 +38,6 @@ Changd has multiple configuration options and screenshots can be stored on Amazo
 - Open Source
 
 Changd is an open source alternative to apps like Stillio, ChangeTower, Hexowatch, VisualPing or Wachete.
-
-#### Screenshots
-
-<img src="/web/src/assets/img/screenshot1.png" width="500">
-<img src="/web/src/assets/img/screenshot2.png" width="500">
 
 ## Getting Started
 
