@@ -4,9 +4,9 @@
 
 ###
 
-Changd is a open source web monitoring application and a free alternative to ChangeTower.com, Hexowatch.com and other SaaS based solutions. Changd can currently be used for automated monitoring visual site changes (screenshots), XPath's or API's.
+Changd is a open source web monitoring application and a free alternative to ChangeTower.com, Hexowatch.com, and other SaaS-based solutions. Changd can currently be used for automated monitoring visual site changes (screenshots), XPath's or API's.
 
-Changd is developed using Typescript, React and AntD for UI and the API/backend is written in JS and running on Node.js. I developed Changd because I wanted a free website monitoring solution which I could host locally and have full control over.
+Changd is developed using Typescript, React and AntD for UI, and the API/backend is written in JS and running on Node.js. I developed Changd because I wanted a free website monitoring solution that I could host locally and have full control over.
 
 Changd has multiple configuration options and screenshots can be stored on Amazon S3 or locally. Notifications can be sent using your own SMTP service or Amazon SES.
 
@@ -17,7 +17,7 @@ Changd has multiple configuration options and screenshots can be stored on Amazo
 - Get notified when a news article is changed
 - Detect changes in API responses
 - Monitor specific text (via XPath) changes on a website
-- Your website gets defaced, hacked or changed without your knowledge
+- Your website gets defaced, hacked, or changed without your knowledge
 - Monitor your site availability (online or offline)
 - Monitor competitor websites for changes
 - Be sure content is displayed correctly
@@ -27,7 +27,7 @@ Changd has multiple configuration options and screenshots can be stored on Amazo
 - Monitors Visual changes, APIs or HTML XPaths
 - Run using docker, locally or in a scaled node environment
 - Quickly and easily setup new jobs
-- Notify one or multiple email addresses when condition is met
+- Notify one or multiple email addresses when a condition is met
 - Visual screenshot of website changes via email notifications
 - Notification options for SMTP or Amazon SES Notifications
 - Store screenshots in AWS S3 or Locally
