@@ -3,4 +3,3 @@ node_modules
 deployment_key.txt
 deployment_scripts
 server/screenshots
-db

@@ -57,7 +57,8 @@ Running from docker is the quickest and easiet method for testing the applicatio
 git clone https://github.com/paschmann/changd
 docker-compose up
 ```
-Open your browser to http://localhost:80 
+Open your browser to http://localhost:80
+
 Create a new account using the "Register" button on the login screen.
 
 ## Running Locally
