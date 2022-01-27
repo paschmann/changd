@@ -16,5 +16,6 @@ RUN set -x \
 
 WORKDIR /app
 COPY . .
+COPY /.env_template .env
 RUN npm i --production
 CMD ["pm2-runtime", "pm2.config.js"]
