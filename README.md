@@ -91,7 +91,7 @@ cd frontend
 npm start
 ```
 
-Optional:
+Optional (Cron Service):
 ```
 cd server
 npm run crondev
