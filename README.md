@@ -99,6 +99,10 @@ npm run crondev
 
 Once running, your web application frontend should be available on http://localhost:3000, the API/backend should be available on http://localhost:8000. The frontend API calls will be proxied to port 8000 using the proxy referenced in the frontend/package.json file.
 
+#### AWS S3 Storage
+
+If you would like to reduce your local file system storage and use AWS S3, be sure to specify a S3_BUCKET filename in your .env file along with your AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY. This should be a IAM User with S3 Access (suggested).
+
 ## License
 
 This project is licensed under the MIT License - see the [license](license) file for details
