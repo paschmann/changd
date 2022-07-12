@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="578.29" height="444.46" viewBox="0 0 578.29 444.46">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#Analogous_2);
+      }
+
+      .cls-2 {
+        fill: url(#Analogous_2-2);
+      }
+    </style>
+    <linearGradient id="Analogous_2" data-name="Analogous 2" y1="222.04" x2="578.29" y2="222.04" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#009c8b"/>
+      <stop offset="0.5" stop-color="#0065b1"/>
+      <stop offset="1" stop-color="#009c3d"/>
+    </linearGradient>
+    <linearGradient id="Analogous_2-2" x1="220.99" y1="402.15" x2="513.2" y2="402.15" xlink:href="#Analogous_2"/>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Layer_1-2" data-name="Layer 1">
+      <path class="cls-1" d="M11.35,444.09,0,429.46,247.94,0h17.32L410.92,251.43a10,10,0,1,1-17.32,10L256.6,25l-227,393.24,536-149.47A10,10,0,1,1,571,288Z"/>
+      <path class="cls-2" d="M504.55,444.46H231a10,10,0,0,1,0-20H487.18l-29.71-49.59a10,10,0,0,1,17.3-10l38.43,64.6Z"/>
+    </g>
+  </g>
+</svg>
