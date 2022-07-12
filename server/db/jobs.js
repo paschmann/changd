@@ -83,6 +83,7 @@ async function postJob(req, res, next) {
         });
 
         if (req.body.job_type === "0") {
+          db.none('update jobs set diff_percent = $1 where job_id = $2', [req.body.diff_percent, data.job_id]);
           job_daemon.getWebsiteScreenshot(req.body.url, "screenshots/" + data.job_id + "/", filename);
         } else if (req.body.job_type === "1") {
           //Get XPath Ref Value write to latest screenshot

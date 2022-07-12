@@ -60,7 +60,7 @@ create table if not exists jobs
 	frequency integer default 60 not null,
 	run_count integer default 0,
 	latest_screenshot varchar default '0.png'::character varying,
-	diff_percent integer default 10,
+	diff_percent integer default 5,
 	error_count integer default 0,
 	latest_error varchar,
 	latest_diff_percent integer,
