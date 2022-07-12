@@ -23,6 +23,7 @@ router.get('/users/me/settings', users.validateJWT, users.getUserSettings);
 
 router.get('/jobs', users.validateJWT, jobs.getJobs);
 router.post('/jobs', users.validateJWT, jobs.postJob);
+router.get('/screenshots/:job_id/:filename', jobs.getJobScreenshot);
 router.get('/jobs/:job_id', users.validateJWT, jobs.getJobDetail);
 router.put('/jobs/:job_id', users.validateJWT, jobs.putJob);
 router.post('/jobs/:job_id/reset', users.validateJWT, jobs.resetJob);

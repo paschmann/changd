@@ -5,17 +5,8 @@ import reportWebVitals from './reportWebVitals';
 import App from './pages/app';
 import './index.css';
 
-import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react';
-
-const instance = createInstance({
-  urlBase: 'https://analytics.insiderstats.com',
-  siteId: 7
-})
-
 ReactDOM.render(
-  <MatomoProvider value={instance}>
-    <App />
-  </MatomoProvider>, 
+    <App />,
 document.getElementById("root"));
 
 // If you want to start measuring performance in your app, pass a function

@@ -26,8 +26,6 @@ app.use(bodyParser.urlencoded({
 
 app.use('/api/v1/', routes);
 
-app.use('/api/v1/screenshots', express.static('screenshots/'));
-
 if (process.env.NODE_ENV !== 'dev') {
   app.use(function (err, req, res, next) {
     res.status(err.code || 500)

@@ -556,8 +556,15 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
 
     await filehandler.createFile(path, data);
 
-    const smalldata = await sharp(data)
-      .resize(400)
+    var smalldata;
+    try {
+      smalldata = await sharp(data)
+        .resize(400)
+        .toBuffer();
+    } catch (err) {
+      smalldata = data;
+      console.log("Unable to resize website screenshot: " + err);
+    }
 
     await filehandler.createFile(dest + filename + "_small.png", smalldata);
 

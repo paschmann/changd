@@ -3,6 +3,7 @@ var logger = require('./logger');
 var users = require('./users');
 var job_daemon = require('./job_daemon');
 const filehandler = require('./file_handler');
+var path = require('path');
 
 module.exports = {
   getJobs,
@@ -12,7 +13,8 @@ module.exports = {
   getJobDetail,
   putJobStatus,
   getUserTimeline,
-  resetJob
+  resetJob,
+  getJobScreenshot
 };
 
 function getJobs(req, res, next) {
@@ -26,6 +28,12 @@ function getJobs(req, res, next) {
       logger.logError('getJobs: ' + err);
       return next(err);
     });
+}
+
+function getJobScreenshot(req, res, next) {
+  var filepath = path.join(__dirname, '..', "/screenshots/" + req.params.job_id + "/" + req.params.filename)
+  console.log("get local screenshot: " + filepath );
+  res.sendFile(filepath);
 }
 
 function getJobDetail(req, res, next) {
