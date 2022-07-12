@@ -46,21 +46,26 @@ function replaceTextWithVariables(text, oVariables) {
 }
 
 function getEmailLogos() {
-   var attachments = [];
-   attachments.push(
-      {
-         filename: 'logo-url.png',
-         path: filehandler.createLocalFilePath("assets/logo-url.png"),
-         cid: 'logo'
-      })
-   attachments.push(
-      {
-         filename: 'logo-text.png',
-         path: filehandler.createLocalFilePath("assets/logo-text.png"),
-         cid: 'logoText'
-      }
-   )
-   return attachments;
+   try {
+      var attachments = [];
+      attachments.push(
+         {
+            filename: 'logo-url.png',
+            path: filehandler.createLocalFilePath("assets/logo-url.png"),
+            cid: 'logo'
+         })
+      attachments.push(
+         {
+            filename: 'logo-text.png',
+            path: filehandler.createLocalFilePath("assets/logo-text.png"),
+            cid: 'logoText'
+         }
+      )
+      return attachments;
+   } catch(err) {
+      console.log(err);
+      return [];
+   }
 }
 
 function sendVisualMail(recipient, body, subject, htmlbody, screenshot_diff, screenshot, type) {
