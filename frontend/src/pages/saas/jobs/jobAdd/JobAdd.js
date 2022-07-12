@@ -125,6 +125,7 @@ class JobDetail extends Component {
   }
 
   handleChange = (event) => {
+    /* TO DO: Not working correctly, moves cursor out of input box
     if (event.target.name === 'url') {
       var valid = validURL(event.target.value);
       if (valid) {
@@ -133,7 +134,8 @@ class JobDetail extends Component {
         this.setState({ validUrlStatus: 'error', validUrl: true });
       }
     }
-    this.setState({ [event.target.name]: event.target.value })
+    */
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   handleSliderChange = (event) => {
