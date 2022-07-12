@@ -13,7 +13,7 @@ export const getQueryParam = (name, props) => {
 export const getFilepath = () => {
   var filepath = sessionStorage.getItem('filepath');
   if (filepath.indexOf("https") >= 0) {
-    return filepath;
+    return filepath + '/screenshots/';
   } else {
     return window.origin + '/api/v1/screenshots/';
   }
