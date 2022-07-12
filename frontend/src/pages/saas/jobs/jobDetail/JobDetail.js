@@ -168,8 +168,8 @@ class JobDetail extends Component {
                 {record.log}
               </Paragraph>
             }
-            {record.status === 2 && record.job_type === 0 && <Image key={'screenshot_' + record.history_id} width={200} style={{ 'objectPosition': '100% 0', 'width': '100%', 'height': '80px', 'objectFit': 'cover' }} src={ window.origin + '/api/v1/screenshots/' + record.job_id + '/' + record.diff_screenshot} fallback={imageNotFound} />}
-            {record.status === 3 && record.job_type === 0 && <Image key={'screenshot_' + record.history_id} width={200} style={{ 'objectPosition': '100% 0', 'width': '100%', 'height': '80px', 'objectFit': 'cover' }} src={ window.origin + '/api/v1/screenshots/' + record.job_id + '/' + record.screenshot + '.png'} fallback={imageNotFound} />}
+            {record.status === 2 && record.job_type === 0 && <Image key={'screenshot_' + record.history_id} width={200} style={{ 'objectPosition': '100% 0', 'width': '100%', 'height': '80px', 'objectFit': 'cover' }} src={ getFilepath() + record.job_id + '/' + record.diff_screenshot} fallback={imageNotFound} />}
+            {record.status === 3 && record.job_type === 0 && <Image key={'screenshot_' + record.history_id} width={200} style={{ 'objectPosition': '100% 0', 'width': '100%', 'height': '80px', 'objectFit': 'cover' }} src={ getFilepath() + record.job_id + '/' + record.screenshot + '.png'} fallback={imageNotFound} />}
             {(record.status === 2 || record.status === 3) && record.job_type === 1 && 
               <Paragraph 
                 key = "paragraph"

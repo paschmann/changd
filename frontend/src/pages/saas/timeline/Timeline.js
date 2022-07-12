@@ -58,7 +58,7 @@ class Timelined extends Component {
           {
             record.status === 2 && record.job_type === 0 && 
             <Image style={{ 'objectPosition': '100% 0', 'width': '100%', 'height': '80px', 'objectFit': 'cover' }}
-              src={ window.origin + '/api/v1/screenshots/' + record.job_id + '/' + record.diff_screenshot }
+              src={ getFilepath() + record.job_id + '/' + record.diff_screenshot }
               fallback={imageNotFound}>
             </Image>
           }

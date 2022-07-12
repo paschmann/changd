@@ -11,7 +11,12 @@ export const getQueryParam = (name, props) => {
 }
 
 export const getFilepath = () => {
-  return sessionStorage.getItem('filepath');
+  var filepath = sessionStorage.getItem('filepath');
+  if (filepath.indexOf("https") >= 0) {
+    return filepath;
+  } else {
+    return window.origin + '/api/v1/screenshots/';
+  }
 }
 
 export const formatPercentToWords = (percentage) => {
