@@ -88,7 +88,7 @@ cd server
 npm run dev
 cd ..
 cd frontend
-npm start 
+npm start
 ```
 
 Optional (Cron Service):
