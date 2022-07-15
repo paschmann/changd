@@ -47,10 +47,10 @@ class Notifications extends Component {
   render() {
     const columns = [
       {
-        title: 'Address',
-        dataIndex: 'param_1',
+        title: 'Name',
+        dataIndex: 'name',
         render: (text, record) => (
-          <Link to={"/notifications/" + record.notification_id + "/edit"}>{record.param_1}</Link>
+          <Link to={"/notifications/" + record.notification_id + "/edit"}>{record.name}</Link>
         )
       },
       {

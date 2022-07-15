@@ -6,6 +6,7 @@ var users = require('../db/users');
 var jobs = require('../db/jobs');
 var analytics = require('../db/analytics');
 var user_notifications = require('../db/user_notifcations');
+var notifications = require('../db/notifications');
 var job_daemon = require('../db/job_daemon');
 
 router.get('/users', users.validateJWT, users.getAllUsers);
@@ -45,5 +46,7 @@ router.get('/util/checkurl', users.validateJWT, job_daemon.checkUrl);
 router.get('/preview/xpath', users.validateJWT, job_daemon.previewXPathJob);
 router.get('/preview/api', users.validateJWT, job_daemon.previewAPIJob);
 
+router.get('/reach/providers', notifications.getReachProviders);
+router.get('/reach/providers/:provider/parameters', notifications.getReachParameters);
 
 module.exports = router;

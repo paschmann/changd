@@ -15,8 +15,8 @@ const columns = [
     dataIndex: 'type'
   },
   {
-    title: 'Address',
-    dataIndex: 'param_1'
+    title: 'Name',
+    dataIndex: 'name'
   }
 ];
 

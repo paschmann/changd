@@ -461,9 +461,9 @@ async function executeVisualJob(job, diff_percent, run_type) {
           html = notifications.replaceTextWithVariables(html, properties);
 
           user_notifications.forEach(notification => {
-            if (notification.type == 'email') {
-              notifications.sendVisualMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "screenshots/" + job.job_id + "/" + newfilename + "_small.png", "change");
-            }
+            //if (notification.type == 'smtp' ) {
+              notifications.sendVisualMail(JSON.parse(notification.param_1), "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "screenshots/" + job.job_id + "/" + newfilename + "_small.png", "change");
+            //}
           });
 
           // Delete old "latest_screenshot" since we just updated it.

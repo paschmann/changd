@@ -36,8 +36,8 @@ function getNotifcationDetail(req, res, next) {
 
 function postNotification(req, res, next) {
     var userid = users.getUserID(req);
-    db.none('insert into user_notifications (type, param_1, user_id)' +
-    'values ($1, $2, $3)', [req.body.type, req.body.param_1, userid])
+    db.none('insert into user_notifications (type, param_1, user_id, name)' +
+    'values ($1, $2, $3, $4)', [req.body.type, req.body.param_1, userid, req.body.name])
         .then(function (data) {
           res.status(200).json({
             message: 'User Notification created',
@@ -69,7 +69,7 @@ function deleteNotification(req, res, next) {
 }
 
 function putNotification(req, res, next) {
-  db.none('update user_notifications set param_1 = $1 where notification_id = $2', [req.body.param_1, req.params.notification_id])
+  db.none('update user_notifications set param_1 = $1, name = $3 where notification_id = $2', [req.body.param_1, req.params.notification_id, req.body.name])
     .then(function (resp) {
       res.status(200).json({
         message: 'Notification updated',

@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 var ses = require('nodemailer-ses-transport');
-const filehandler = require('./file_handler')
+const filehandler = require('./file_handler');
+const { Reach } = require('reach-sdk');
+Reach.init();
 
 module.exports = {
    sendVisualMail,
@@ -8,8 +10,18 @@ module.exports = {
    getVisualChangeHtml,
    getXPathChangeHtml,
    getResetPasswordHtml,
-   replaceTextWithVariables
+   replaceTextWithVariables,
+   getReachProviders,
+   getReachParameters
 };
+
+function getReachProviders(req, res, next) {
+   res.json(Reach.listProviders());
+}
+
+function getReachParameters(req, res, next) {
+   res.json(Reach.parameters(req.params.provider));
+}
 
 var transporter;
 
@@ -68,7 +80,7 @@ function getEmailLogos() {
    }
 }
 
-function sendVisualMail(recipient, body, subject, htmlbody, screenshot_diff, screenshot, type) {
+function sendVisualMail(notification, body, subject, htmlbody, screenshot_diff, screenshot, type) {
    var attachments = [];
    attachments = getEmailLogos();
 
@@ -84,15 +96,14 @@ function sendVisualMail(recipient, body, subject, htmlbody, screenshot_diff, scr
          cid: 'screenshot_diff'
       })
    }
-   
-   transporter.sendMail({
-      from: "Changd <" + process.env.EMAIL_FROM + ">",
-      to: recipient,
-      subject: subject,
-      text: body,
-      html: htmlbody,
-      attachments: attachments
-   });
+
+   notification.required.subject = subject;
+   notification.required.text = body;
+   notification.optional.html = htmlbody;
+   //notification.optional.attachments = attachments;
+   notification.optional.smtpSecure = false;
+
+   Reach.send(notification);
 }
 
 function sendXPathMail(recipient, body, subject, htmlbody, type) {

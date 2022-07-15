@@ -259,7 +259,7 @@ class JobDetail extends Component {
                   <Descriptions.Item key="notifications" label="Notifications">
                     {
                       this.state.jobNotifications?.map(notification => (
-                        <div key={notification.notification_id} style={{ 'marginRight': '20px' }}>{notification.param_1 + ' (' + notification.type + ')'}</div>
+                        <div key={notification.notification_id} style={{ 'marginRight': '20px' }}>{notification.name + ' (' + notification.type + ')'}</div>
                       ))
                     }
                   </Descriptions.Item>

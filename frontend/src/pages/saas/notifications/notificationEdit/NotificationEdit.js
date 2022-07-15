@@ -25,6 +25,7 @@ class EditNotification extends Component {
       .then(response => {
         this.setState({ param_1: response.data.param_1 });
         this.setState({ type: response.data.type });
+        this.setState({ name: response.data.name });
       }).catch(error => {
         console.log(error);
       }).finally( () => {
@@ -39,7 +40,8 @@ class EditNotification extends Component {
   updateNotification() {
     this.setState({ loading: true });
     putNotification(this.props.match.params.notification_id, {
-      param_1: this.state.param_1
+      param_1: this.state.param_1,
+      name: this.state.name
     })
       .then(response => {
         if (response.status === 200) {
@@ -69,8 +71,11 @@ class EditNotification extends Component {
             layout="vertical"
           >
             { this.state.message && <Alert style={{ marginBottom: '20px', marginTop: '10px' }} message={ this.state.message } type="error" showIcon/> }
-            <Form.Item label="Address">
-              <Input name="param_1" value={this.state.param_1} placeholder="Enter the email address" onChange={this.handleChange} />
+            <Form.Item label="Name">
+              <Input name="name" value={this.state.name} placeholder="Name" onChange={this.handleChange} />
+            </Form.Item>
+            <Form.Item label="Parameters">
+              <Input name="param_1" value={this.state.param_1} placeholder="Parameters" onChange={this.handleChange} />
             </Form.Item>
           </Form>
           <Button type="primary" onClick={() => this.updateNotification()} disabled={this.state.param_1 === '' }>

@@ -117,3 +117,11 @@ export const deleteNotification = ( notification_id ) => {
 export const getUsage = ( status ) => {
     return http.get("/analytics?status=" + status, { headers: getAuthHeader() });
 }
+
+export const getReachProviders = ( ) => {
+    return http.get("/reach/providers", { headers: getAuthHeader() });
+}
+
+export const getReachParameters = ( provider ) => {
+    return http.get("/reach/providers/" + provider + "/parameters", { headers: getAuthHeader() });
+}

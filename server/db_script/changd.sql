@@ -104,7 +104,8 @@ create table if not exists user_notifications
 			primary key,
 	user_id varchar not null,
 	type varchar,
-	param_1 varchar
+	param_1 varchar,
+	name varchar
 );
 
 create unique index if not exists user_channel_channel_id_uindex
