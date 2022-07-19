@@ -82,28 +82,32 @@ function getEmailLogos() {
 
 function sendVisualMail(notification, body, subject, htmlbody, screenshot_diff, screenshot, type) {
    var attachments = [];
-   attachments = getEmailLogos();
+   try {
+      attachments = getEmailLogos();
 
-   if (type === "change") {
-      attachments.push({
-         filename: 'screenshot.png',
-         path: filehandler.createFilePath(screenshot),
-         cid: 'screenshot'
-      })
-      attachments.push({
-         filename: 'screenshot_diff.png',
-         path: filehandler.createFilePath(screenshot_diff),
-         cid: 'screenshot_diff'
-      })
+      if (type === "change") {
+         attachments.push({
+            filename: 'screenshot.png',
+            path: process.cwd() + filehandler.createFilePath(screenshot),
+            cid: 'screenshot'
+         })
+         attachments.push({
+            filename: 'screenshot_diff.png',
+            path: process.cwd() + filehandler.createFilePath(screenshot_diff),
+            cid: 'screenshot_diff'
+         })
+      }
+
+      notification.required.subject = subject;
+      notification.required.text = body;
+      notification.optional.html = htmlbody;
+      notification.optional.attachments = attachments;
+      notification.optional.smtpSecure = false;
+
+      Reach.send(notification);
+   } catch (err) {
+      console.log(err);
    }
-
-   notification.required.subject = subject;
-   notification.required.text = body;
-   notification.optional.html = htmlbody;
-   //notification.optional.attachments = attachments;
-   notification.optional.smtpSecure = false;
-
-   Reach.send(notification);
 }
 
 function sendXPathMail(recipient, body, subject, htmlbody, type) {
