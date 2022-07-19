@@ -517,7 +517,7 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
     const browser = await chromium.puppeteer.launch({
       args: chrome_args,
       executablePath: process.env.CHROME_BIN || await chromium.executablePath,
-      headless: false,
+      headless: true,
       defaultViewport: { height: parseInt(process.env.CAPTURE_IMAGE_HEIGHT), width: parseInt(process.env.CAPTURE_IMAGE_WIDTH), }
     });
     const path = dest + filename + ".png";
