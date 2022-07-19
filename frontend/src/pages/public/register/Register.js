@@ -4,7 +4,6 @@ import { registerUser } from '../../../services/api.service'
 import logo from "../../../assets/logo.svg"
 import textLogo from "../../../assets/logo-text.svg"
 import { Form, Input, Button, Checkbox, Row, Col, Typography, Spin, Alert } from 'antd';
-import { useMatomo } from '@datapunt/matomo-tracker-react';
 
 const { Title } = Typography;
 
@@ -15,12 +14,6 @@ function Register(props) {
     const [message, setMessage] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
-
-    const { trackPageView } = useMatomo()
-
-    useEffect(()=>{
-        trackPageView()
-    }, [trackPageView])
     
     const onSubmit = () => {
         setLoading(true)

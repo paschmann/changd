@@ -4,21 +4,14 @@ import { loginUser } from '../../../services/api.service'
 import { Form, Input, Button, Checkbox, Row, Col, Typography, Spin, Alert } from 'antd';
 import logo from "../../../assets/logo.svg"
 import textLogo from "../../../assets/logo-text.svg"
-import { useMatomo } from '@datapunt/matomo-tracker-react';
 
 const { Title } = Typography;
 
 function Login (props) {
-    const { trackPageView } = useMatomo()
-
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
-
-    useEffect(()=>{
-        trackPageView()
-    }, [trackPageView])
 
     const onFinish = (values) => {
         setLoading(true);

@@ -4,7 +4,6 @@ import { forgotPassword } from '../../../services/api.service'
 import { Form, Input, Button, Row, Col, Typography, Spin } from 'antd';
 import logo from "../../../assets/logo.svg"
 import textLogo from "../../../assets/logo-text.svg"
-import { useMatomo } from '@datapunt/matomo-tracker-react';
 
 const { Title } = Typography;
 
@@ -12,12 +11,6 @@ function Reset(props) {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
-
-  const { trackPageView } = useMatomo()
-
-  useEffect(() => {
-    trackPageView()
-  }, [trackPageView])
 
   const requestResetEmail = (values) => {
     setLoading(true)

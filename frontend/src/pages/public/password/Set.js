@@ -4,7 +4,6 @@ import { setPassword } from '../../../services/api.service'
 import { Form, Input, Button, Row, Col, Typography, Spin } from 'antd';
 import logo from "../../../assets/logo.svg"
 import textLogo from "../../../assets/logo-text.svg"
-import { useMatomo } from '@datapunt/matomo-tracker-react';
 import { getQueryParam } from '../../../services/utils'
 
 const { Title } = Typography;
@@ -15,12 +14,9 @@ function SetPassword(props) {
   const [message, setMessage] = useState("")
   const [token, setToken] = useState("")
 
-  const { trackPageView } = useMatomo()
-
   useEffect(() => {
-    trackPageView()
     setToken(getQueryParam("token", props))
-  }, [props, trackPageView])
+  }, [props])
 
   const updatePassword = (values) => {
     setLoading(true)

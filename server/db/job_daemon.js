@@ -513,10 +513,11 @@ async function executeVisualJob(job, diff_percent, run_type) {
 
 async function getWebsiteScreenshot(url, dest, filename, delay) {
   try {
+    console.log(url)
     const browser = await chromium.puppeteer.launch({
       args: chrome_args,
       executablePath: process.env.CHROME_BIN || await chromium.executablePath,
-      headless: true,
+      headless: false,
       defaultViewport: { height: parseInt(process.env.CAPTURE_IMAGE_HEIGHT), width: parseInt(process.env.CAPTURE_IMAGE_WIDTH), }
     });
     const path = dest + filename + ".png";
