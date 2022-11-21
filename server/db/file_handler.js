@@ -28,7 +28,7 @@ function createFilePath(filename) {
     if (process.env.FILESYSTEM === "S3") {
       return "https://" + process.env.S3_BUCKET + ".s3.amazonaws.com/" + filename
     } else {
-      return "/" + filename
+      return process.cwd() + "/" + filename
     }
   } catch (err) {
     console.log(err);

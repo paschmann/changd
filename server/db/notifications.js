@@ -88,12 +88,12 @@ function sendVisualMail(notification, body, subject, htmlbody, screenshot_diff, 
       if (type === "change") {
          attachments.push({
             filename: 'screenshot.png',
-            path: process.cwd() + filehandler.createFilePath(screenshot),
+            path: filehandler.createFilePath(screenshot),
             cid: 'screenshot'
          })
          attachments.push({
             filename: 'screenshot_diff.png',
-            path: process.cwd() + filehandler.createFilePath(screenshot_diff),
+            path: filehandler.createFilePath(screenshot_diff),
             cid: 'screenshot_diff'
          })
       }
