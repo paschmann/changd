@@ -546,13 +546,10 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
     const $ele = await page.$('body');
     const { _, height } = await $ele.boundingBox();
 
+    //await autoScroll(page);
+
     const data = await page.screenshot({
-      clip: {
-        x: 0,
-        y: 0,
-        width: parseInt(process.env.CAPTURE_IMAGE_WIDTH),
-        height: parseInt(process.env.CAPTURE_IMAGE_HEIGHT)
-      }
+      fullPage: true
     });
 
     await filehandler.createFile(path, data);
@@ -578,7 +575,23 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
   }
 }
 
+async function autoScroll(page){
+  await page.evaluate(() => new Promise((resolve) => {
+    var scrollTop = -1;
+    const interval = setInterval(() => {
+      window.scrollBy(0, 100);
+      if(document.documentElement.scrollTop !== scrollTop) {
+        scrollTop = document.documentElement.scrollTop;
+        return;
+      }
+      clearInterval(interval);
+      resolve();
+    }, 50);
+  }));
+}
+
 async function compare(filename1, filename2, difffilename) {
+  // filename1 / img1 = original screenshot, filename2 / img2 is new screenshot
   try {
     var img1 = await filehandler.getFile(filename1);
   } catch (err) {
@@ -591,18 +604,28 @@ async function compare(filename1, filename2, difffilename) {
     console.log("Image2" + err);
   }
 
-  const { width, height } = img1;
-  const diff = new PNG({ width, height });
+  // Compare the width & height of img 1 vs img2. If they do not match, assume that there is a major change. We do this because pixelmatch requires images have the size dimensions in order
+  // to compare them. This avoids us having huge images stored with fixed dimensions. 
+  var numDiffPixels;
+  var diffPercent;
 
-  const numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, { threshold: parseFloat(process.env.PIXELMATCH_PROCESSING_THRESHOLD), diffColor: [0, 255, 0], alpha: parseFloat(process.env.PIXELMATCH_OUTPUT_ALPHA) });
-
-  await filehandler.createFile(difffilename, PNG.sync.write(diff));
-
+  if (img1.width !== img2.width || img1.height !== img2.height) {
+    const { width, height } = img2;
+    const diff = new PNG({ width, height });
+    numDiffPixels = width * height;
+    await filehandler.createFile(difffilename, PNG.sync.write(img2));
+    diffPercent = ((numDiffPixels / (width * height)) * 100).toFixed(0);
+  } else {
+    const { width, height } = img1;
+    const diff = new PNG({ width, height });
+    numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, { threshold: parseFloat(process.env.PIXELMATCH_PROCESSING_THRESHOLD), diffColor: [0, 255, 0], alpha: parseFloat(process.env.PIXELMATCH_OUTPUT_ALPHA) });
+    await filehandler.createFile(difffilename, PNG.sync.write(diff));
+    diffPercent = ((numDiffPixels / (width * height)) * 100).toFixed(0);
+  }
   
-
   return {
     diff_pixels: numDiffPixels,
-    diff_percent: ((numDiffPixels / (width * height)) * 100).toFixed(0)
+    diff_percent: diffPercent
   }
 }
 
