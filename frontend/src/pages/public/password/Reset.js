@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Redirect, Link } from 'react-router-dom'
 import { forgotPassword } from '../../../services/api.service'
 import { Form, Input, Button, Row, Col, Typography, Spin } from 'antd';

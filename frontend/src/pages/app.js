@@ -44,7 +44,6 @@ function App() {
 
   useEffect(()=>{
     getUser()
-    getUserSettings()
     trackPageView()
   })
   
@@ -54,17 +53,24 @@ function App() {
           setLoggedIn(true)
           sessionStorage.setItem('emailMd5', response.data.emailMD5);
           sessionStorage.setItem('fullname', response.data.firstname + ' ' + response.data.lastname);
+
+          getUserSettings();
       } else {
         console.log("Invalid token")
       }
     })
       .catch(error => {
         setLoggedIn(false);
-        if (window.location.pathname !== '/login') {
+        logout();
+
+        /*
+        Bug - multiple reloads
+        if (window.location.pathname !== '/login' || window.location.pathname !== '/setpassword') {
           logoutAndReload();
         } else {
           logout();
         }
+        */
       })
   }
 

@@ -6,7 +6,7 @@ Reach.init();
 
 module.exports = {
    sendVisualMail,
-   sendXPathMail,
+   sendTextMail,
    getVisualChangeHtml,
    getXPathChangeHtml,
    getResetPasswordHtml,
@@ -110,7 +110,7 @@ function sendVisualMail(notification, body, subject, htmlbody, screenshot_diff, 
    }
 }
 
-function sendXPathMail(recipient, body, subject, htmlbody, type) {
+function sendTextMail(recipient, body, subject, htmlbody, type) {
    var attachments = [];
    attachments = getEmailLogos();
 

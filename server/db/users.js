@@ -165,7 +165,7 @@ function forgotUserPassword(req, res, next) {
                 token: token
               };
               html = notifications.replaceTextWithVariables(html, properties);
-              notifications.sendVisualMail(user[0].email, "Click here " + process.env.DOMAIN + "/setpassword?token=" + token + "\n\n to reset your password.", "Reset your Changd password", html, "", "resetpassword");
+              notifications.sendTextMail(user[0].email, "Click here " + process.env.DOMAIN + "/setpassword?token=" + token + "\n\n to reset your password.", "Reset your Changd password", html, "", "resetpassword");
               res.status(200).json({
                 status: 'success'
               });

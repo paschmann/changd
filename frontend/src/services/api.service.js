@@ -36,7 +36,7 @@ export const logoutUser = ( obj ) => {
     return http.post("/logout", obj);
 }
 
-export const setPassword = ( obj ) => {
+export const setUserPassword = ( obj ) => {
     return http.post("/users/setpassword", obj);
 }
 

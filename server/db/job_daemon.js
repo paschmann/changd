@@ -125,7 +125,7 @@ function getJobCheck(req, res, next) {
             db.none('update jobs set status = 2, latest_error = \'Over 10 errors, disabling automatic checks\' where job_id = $1', [job.job_id]);
             jobs_in_error++;
             //Send notification email that job is not working
-            notifications.sendXPathMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "change");
+            notifications.sendTextMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "change");
           } else {
             console.log("Checking job: " + job.job_id + " - " + job.job_name);
             if (job.job_type === 0) {
@@ -234,7 +234,7 @@ async function executeXPathJob(job, run_type) {
 
             user_notifications.forEach(notification => {
               if (notification.type == 'email') {
-                notifications.sendXPathMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, job.latest_screenshot, formattedText, "change");
+                notifications.sendTextMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, job.latest_screenshot, formattedText, "change");
               }
             });
           }
@@ -330,7 +330,7 @@ async function executeAPIJob(job, run_type) {
 
             user_notifications.forEach(notification => {
               if (notification.type == 'email') {
-                notifications.sendXPathMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, job.latest_screenshot, formattedText, "change");
+                notifications.sendTextMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, job.latest_screenshot, formattedText, "change");
               }
             });
           }

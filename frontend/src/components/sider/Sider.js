@@ -65,7 +65,7 @@ class AppSider extends Component {
           <SubMenu key="settings" icon={<SettingOutlined />} title="Settings">
             <Menu.Item key="8"><Link to="/account">Account</Link></Menu.Item>
             <Menu.Item key="9"><Link to="/notifications">Notifications</Link></Menu.Item>
-            <Menu.Item key="10"><Link onClick={ () => this.showModal() }>Logout</Link></Menu.Item>
+            <Menu.Item key="10"><Link to="/" onClick={ () => this.showModal() }>Logout</Link></Menu.Item>
           </SubMenu>
         </Menu>
       </Sider>

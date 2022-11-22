@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { setPassword } from '../../../services/api.service'
+import { setUserPassword } from '../../../services/api.service'
 import { Form, Input, Button, Row, Col, Typography, Spin } from 'antd';
 import logo from "../../../assets/logo.svg"
 import textLogo from "../../../assets/logo-text.svg"
@@ -20,7 +20,7 @@ function SetPassword(props) {
 
   const updatePassword = (values) => {
     setLoading(true)
-    setPassword({
+    setUserPassword({
       password: pass,
       token: token
     }).then(response => {
