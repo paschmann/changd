@@ -433,6 +433,7 @@ async function executeVisualJob(job, diff_percent, run_type) {
 
     if (gotImage && objDiff) {
       console.log("Image difference to original: " + objDiff.diff_percent)
+      console.log("Reason: " + objDiff.reason)
       console.log("Job threshold: " + diff_percent)
     }
 
