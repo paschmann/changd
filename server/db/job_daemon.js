@@ -610,8 +610,6 @@ async function compare(filename1, filename2, difffilename) {
   var diffPercent = 0;
   var diffReason = "Normal";
 
-  console.log("test")
-
   try {
     if (img1.width !== img2.width || img1.height !== img2.height) {
       const { width, height } = img2;
