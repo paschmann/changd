@@ -606,26 +606,35 @@ async function compare(filename1, filename2, difffilename) {
 
   // Compare the width & height of img 1 vs img2. If they do not match, assume that there is a major change. We do this because pixelmatch requires images have the size dimensions in order
   // to compare them. This avoids us having huge images stored with fixed dimensions. 
-  var numDiffPixels;
-  var diffPercent;
+  var numDiffPixels = 0;
+  var diffPercent = 0;
+  var diffReason = "Normal";
 
-  if (img1.width !== img2.width || img1.height !== img2.height) {
-    const { width, height } = img2;
-    const diff = new PNG({ width, height });
-    numDiffPixels = width * height;
-    await filehandler.createFile(difffilename, PNG.sync.write(img2));
-    diffPercent = ((numDiffPixels / (width * height)) * 100).toFixed(0);
-  } else {
-    const { width, height } = img1;
-    const diff = new PNG({ width, height });
-    numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, { threshold: parseFloat(process.env.PIXELMATCH_PROCESSING_THRESHOLD), diffColor: [0, 255, 0], alpha: parseFloat(process.env.PIXELMATCH_OUTPUT_ALPHA) });
-    await filehandler.createFile(difffilename, PNG.sync.write(diff));
-    diffPercent = ((numDiffPixels / (width * height)) * 100).toFixed(0);
+  try {
+    if (img1.width !== img2.width || img1.height !== img2.height) {
+      const { width, height } = img2;
+      const diff = new PNG({ width, height });
+      numDiffPixels = width * height;
+      await filehandler.createFile(difffilename, PNG.sync.write(img2));
+      diffPercent = ((numDiffPixels / (width * height)) * 100).toFixed(0);
+      diffReason = "Image sizes do not match."
+    } else {
+      const { width, height } = img1;
+      const diff = new PNG({ width, height });
+      numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, { threshold: parseFloat(process.env.PIXELMATCH_PROCESSING_THRESHOLD), diffColor: [0, 255, 0], alpha: parseFloat(process.env.PIXELMATCH_OUTPUT_ALPHA) });
+      await filehandler.createFile(difffilename, PNG.sync.write(diff));
+      diffPercent = ((numDiffPixels / (width * height)) * 100).toFixed(0);
+      diffReason = "Pixel comparison"
+    }
+    
+  } catch (err) {
+    console.log("Error comparing images: " + err);
   }
-  
+
   return {
     diff_pixels: numDiffPixels,
-    diff_percent: diffPercent
+    diff_percent: diffPercent,
+    reason: diffReason
   }
 }
 
