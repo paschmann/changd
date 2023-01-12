@@ -605,7 +605,8 @@ async function compare(filename1, filename2, difffilename) {
     console.log("Image2" + err);
   }
 
-  // Compare the width & height of img 1 vs img2. If they do not match, assume that there is a major change. We do this because pixelmatch requires images have the size dimensions in order
+  // Compare the width & height of img 1 vs img2. If they do not match, assume that there is a major change. 
+  // We do this because pixelmatch requires images have the size dimensions in order
   // to compare them. This avoids us having huge images stored with fixed dimensions. 
   var numDiffPixels = 0;
   var diffPercent = 0;
