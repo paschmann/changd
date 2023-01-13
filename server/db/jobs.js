@@ -14,8 +14,23 @@ module.exports = {
   putJobStatus,
   getUserTimeline,
   resetJob,
-  getJobScreenshot
+  getJobScreenshot,
+  resetErrorCount
 };
+
+function resetErrorCount(req, res, next) {
+  db.none('update jobs set error_count = 0 where job_id = $1', [req.params.job_id])
+    .then(function (resp) {
+      res.status(200).json({
+        message: 'Error status updated',
+        type: 'success'
+      });
+    })
+    .catch(function (err) {
+      logger.logError('resetErrorCount: ' + err);
+      return next(err);
+    });
+}
 
 function getJobs(req, res, next) {
   var userid = users.getUserID(req);

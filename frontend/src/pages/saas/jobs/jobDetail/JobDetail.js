@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Layout } from 'antd';
 import { Breadcrumb, Button, Table, PageHeader, Descriptions, Row, Statistic, Typography, Image, Spin, Tag, Popconfirm } from 'antd';
-import { getJobDetail, runJob, resetJob } from "../../../../services/api.service";
+import { getJobDetail, runJob, resetJob, deleteJobErrors } from "../../../../services/api.service";
 import { Link } from "react-router-dom";
 import Moment from 'moment';
 import { formatPercentToWords } from "../../../../services/utils"
@@ -32,6 +32,17 @@ class JobDetail extends Component {
 
   componentWillUnmount() {
     clearInterval(this.intervalId);
+  }
+
+  clearJobErrors(job_id) {
+    this.setState({ loading: true });
+    this.setState({ message: '' });
+    deleteJobErrors(this.props.match.params.job_id).then(response => {
+      if (response.data) {
+        this.getJobdetail();
+      }
+      this.setState({ loading: false });
+    }).catch(error => { })
   }
 
   runJob(job_id, type) {
@@ -91,24 +102,46 @@ class JobDetail extends Component {
     var jobHistory = data;
     var consolidated_history = [];
 
-    if (this.state.consolidated === true) {
-      var entries = 0;
-      var consolidated = 0;
-      jobHistory.forEach(function (item, index) {
-        if (index === 0 || (item.status === 2 || item.status === 0 || item.status === 3 || item.run_type === "Test") || (item.status === 1 && jobHistory[index - 1].status !== 1)) {
-          consolidated_history.push(item);
-          consolidated = 0;
-          entries++;
-        } else {
-          consolidated++;
-          consolidated_history[entries - 1].status = 4;
-          consolidated_history[entries - 1]["datetime"] = consolidated + " checks";
-        }
-      })
-    } else {
-      consolidated_history = jobHistory;
+    try {
+      if (this.state.consolidated === true) {
+        // Not displaying correctly due to bad logic ....
+        var entries = 0;
+        var consolidated = 0;
+        var errors = 0;
+        jobHistory.forEach(function (item, index) {          
+          if (index < 3) {
+            consolidated_history.push(item);
+            errors = 0;
+            consolidated = 0;
+            entries++;
+          } else if (item.run_type === "Test") {
+            consolidated_history.push(item);
+            errors = 0;
+            consolidated = 0;
+            entries++;
+          } else if (item.status === 1 && jobHistory[index - 1].status !== 1) {
+            consolidated_history.push(item);
+            errors = 0;
+            consolidated = 0;
+            entries++;
+          } else if (item.status === 0 && jobHistory[index - 1].status !== 0) {
+            errors++;
+            consolidated_history[entries - 1].status = 4;
+            consolidated_history[entries - 1]["datetime"] = errors + " checks resulted in errors";
+            //entries++;
+          } else {
+            consolidated++;
+            consolidated_history[entries - 1].status = 4;
+            consolidated_history[entries - 1]["datetime"] = consolidated + " checks with no changes";
+          }
+        })
+      } else {
+        consolidated_history = jobHistory;
+      }
+      this.setState({ jobHistory: consolidated_history });
+    } catch (err) {
+      console.log(err);
     }
-    this.setState({ jobHistory: consolidated_history });
   }
 
   setDetail() {
@@ -212,6 +245,7 @@ class JobDetail extends Component {
                 <Button key="1" type="primary"><Link to={'/jobs/' + this.state.jobDetail?.job_id + '/edit'} >Edit</Link></Button>,
                 <Button key="2" onClick={() => this.runJob(this.state.jobDetail?.job_id, "run")}>Run</Button>,
                 <Button key="3" onClick={() => this.runJob(this.state.jobDetail?.job_id, "test")}>Test</Button>,
+                <Button key="4" onClick={() => this.clearJobErrors(this.state.jobDetail?.job_id)}>Clear Errors</Button>,
                 <Popconfirm cancelButtonProps={{ hidden: true }} placement="bottomRight" okText="OK" cancelText="OK" title="Test will execute the job and trigger notifications regardless if there are changes, useful for testing a new job and notification delivery. Run will execute the job and send a notification, only if there are changes."><Button type="dashed" shape="round">?</Button></Popconfirm>
               ]}
             >

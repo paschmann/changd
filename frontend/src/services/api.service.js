@@ -92,6 +92,10 @@ export const deleteJob = ( job_id ) => {
     return http.delete("/jobs/" + job_id, { headers: getAuthHeader() });
 }
 
+export const deleteJobErrors = ( job_id ) => {
+    return http.delete("/jobs/" + job_id + "/errors", { headers: getAuthHeader() });
+}
+
 
 
 export const getNotifications = ( status ) => {

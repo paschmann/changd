@@ -30,6 +30,7 @@ router.put('/jobs/:job_id', users.validateJWT, jobs.putJob);
 router.post('/jobs/:job_id/reset', users.validateJWT, jobs.resetJob);
 router.put('/jobs/:job_id/status', users.validateJWT, jobs.putJobStatus);
 router.delete('/jobs/:job_id', users.validateJWT, jobs.deleteJob);
+router.delete('/jobs/:job_id/errors', users.validateJWT, jobs.resetErrorCount);
 
 router.get('/timeline', users.validateJWT, jobs.getUserTimeline);
 router.get('/analytics', users.validateJWT, analytics.getUsage);
