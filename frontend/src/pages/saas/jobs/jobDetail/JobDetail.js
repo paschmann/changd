@@ -108,31 +108,17 @@ class JobDetail extends Component {
         var entries = 0;
         var consolidated = 0;
         var errors = 0;
-        jobHistory.forEach(function (item, index) {          
-          if (index < 3) {
-            consolidated_history.push(item);
-            errors = 0;
-            consolidated = 0;
-            entries++;
-          } else if (item.run_type === "Test") {
-            consolidated_history.push(item);
-            errors = 0;
-            consolidated = 0;
-            entries++;
-          } else if (item.status === 1 && jobHistory[index - 1].status !== 1) {
-            consolidated_history.push(item);
-            errors = 0;
-            consolidated = 0;
-            entries++;
-          } else if (item.status === 0 && jobHistory[index - 1].status !== 0) {
-            errors++;
-            consolidated_history[entries - 1].status = 4;
-            consolidated_history[entries - 1]["datetime"] = errors + " checks resulted in errors";
-            //entries++;
-          } else {
+        jobHistory.forEach(function (item, index) {
+
+          if ((index > 1 && index < jobHistory.length - 1) && (item.status === 1 && (jobHistory[index + 1].status === 1 || consolidated_history[entries - 1].status === 4))) {
             consolidated++;
             consolidated_history[entries - 1].status = 4;
-            consolidated_history[entries - 1]["datetime"] = consolidated + " checks with no changes";
+            consolidated_history[entries - 1]["datetime"] = (consolidated + 1) + " checks with no changes";
+          } else {
+            consolidated_history.push(item);
+            errors = 0;
+            consolidated = 0;
+            entries++;
           }
         })
       } else {
@@ -166,9 +152,10 @@ class JobDetail extends Component {
         dataIndex: 'datetime',
         render: (text, record) => (
           <div>
-            {record.status !== 3 && record.status !== 4 && record.datetime !== null ? Moment.utc(record.datetime).local().format('MMMM Do YYYY, h:mm a') : ""}
+            {record.status !== 3 && record.status !== 4 && record.status !== 5 && record.datetime !== null ? Moment.utc(record.datetime).local().format('MMMM Do YYYY, h:mm a') : ""}
             {record.status === 3 && "Reference"}
             {record.status === 4 && record.datetime}
+            {record.status === 5 && record.datetime}
           </div>
         )
       },
