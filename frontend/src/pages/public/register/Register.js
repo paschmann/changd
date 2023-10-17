@@ -34,7 +34,7 @@ function Register(props) {
                 if (error.response.status === 409) {
                     setMessage("This email has already been registered, please login.")
                 } else {
-                    setMessage("Error, please try again.")
+                    setMessage(error.response.data.message);
                 }
             })
     };

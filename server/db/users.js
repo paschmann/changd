@@ -290,36 +290,43 @@ function getAllUsers(req, res, next) {
 }
 
 function registerUser(req, res, next) {
-      db.any('select user_id from users where email = $1', req.body.email)
-        .then(function (existingUser) {
-          if (existingUser.length > 0) {
-            return res.status(409).json({
-              type: 'danger',
-              message: 'Email is already taken'
-            });
-          } else {
-            var password = saltPassword(req.body.password);
-            db.any('insert into users(firstname, lastname, email, password)' +
-              'values ($1, $2, $3, $4) RETURNING user_id', [req.body.firstname, req.body.lastname, req.body.email, password])
-              .then(function (data) {
-                var user = {
-                  user_id: data[0].user_id,
-                  firstname: req.body.firstname,
-                  lastname: req.body.lastname
-                };
-                var token = createJWT({ user_id: data[0].user_id });
-                user.token = token;
-                res.status(200).json(user);
-              })
-              .catch(function (err) {
-                logger.logError('registerUser: ' + err);
-                res.status(500).json({
-                  message: 'Unable to register user: ' + err,
-                  type: 'danger'
-                });
-              });
-          }
+  if (process.env.DISABLE_REGISTRATION === "true") {
+    res.status(500).json({
+      message: 'Registration is disabled.',
+      type: 'danger'
+    });
+  } else {
+    db.any('select user_id from users where email = $1', req.body.email)
+    .then(function (existingUser) {
+      if (existingUser.length > 0) {
+        return res.status(409).json({
+          type: 'danger',
+          message: 'Email is already taken'
         });
+      } else {
+        var password = saltPassword(req.body.password);
+        db.any('insert into users(firstname, lastname, email, password)' +
+          'values ($1, $2, $3, $4) RETURNING user_id', [req.body.firstname, req.body.lastname, req.body.email, password])
+          .then(function (data) {
+            var user = {
+              user_id: data[0].user_id,
+              firstname: req.body.firstname,
+              lastname: req.body.lastname
+            };
+            var token = createJWT({ user_id: data[0].user_id });
+            user.token = token;
+            res.status(200).json(user);
+          })
+          .catch(function (err) {
+            logger.logError('registerUser: ' + err);
+            res.status(500).json({
+              message: 'Unable to register user: ' + err,
+              type: 'danger'
+            });
+          });
+      }
+    });
+  }
 }
 
 function loginUser(req, res, next) {
