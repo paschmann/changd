@@ -44,8 +44,10 @@
     "nodemon": "^2.0.15",
     "pg-promise": "^10.10.2",
     "pixelmatch": "^5.2.1",
-    "puppeteer": "1.10.0",
+    "puppeteer": "^1.10.0",
     "puppeteer-core": "^10.1.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "reach-sdk": "^1.0.2",
     "request": "^2.88.2",
     "sharp": "^0.29.3"
