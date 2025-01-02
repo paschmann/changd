@@ -48,6 +48,7 @@ const chrome_args = [
   '--use-gl=swiftshader',
   '--use-mock-keychain',
   '--disable-setuid-sandbox',
+  '--disable-gpu',
   '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15'
 ];
 
@@ -520,7 +521,7 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
     const browser = await chromium.puppeteer.launch({
       args: chrome_args,
       executablePath: process.env.CHROME_BIN || await chromium.executablePath,
-      headless: false,
+      headless: true,
       defaultViewport: { height: parseInt(process.env.CAPTURE_IMAGE_HEIGHT), width: parseInt(process.env.CAPTURE_IMAGE_WIDTH), }
     });
     const path = dest + filename + ".png";
@@ -540,9 +541,6 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
 
     await page.goto(url, { waitUntil: 'networkidle0' });
 
-    await page.waitForTimeout((Math.floor(Math.random() * 12) + 5) * 1000) 
-
-    //Wait slightly longer just in case
     await new Promise(resolve => setTimeout(resolve, parseInt(delay * 1000)));
 
     // Hopefully remove cookie consent box
@@ -581,8 +579,8 @@ async function getWebsiteScreenshot(url, dest, filename, delay) {
 
     await filehandler.createFile(dest + filename + "_small.png", smalldata);
 
-    //await page.close();
-    //await browser.close();
+    await page.close();
+    await browser.close();
     return true;
   } catch (err) {
     console.log('Unable to get website screenshot: ' + err);

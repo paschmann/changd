@@ -5,6 +5,7 @@ RUN npm install pm2 -g
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+
 RUN set -x \
     && apk update \
     && apk upgrade \
@@ -12,7 +13,7 @@ RUN set -x \
     udev \
     ttf-freefont \
     chromium \
-    && npm install puppeteer@1.10.0
+    && npm install puppeteer
 
 WORKDIR /app
 COPY . .
