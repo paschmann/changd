@@ -3,9 +3,9 @@ import { Breadcrumb } from 'antd';
 import { postJob, getNotifications, getXPathPreview, getAPIPreview } from "../../../../services/api.service";
 import { Link } from "react-router-dom"
 import { Steps, Button, message, Layout, Form, Input, Slider, Row, Select, Table, Spin, Alert, Tabs, Descriptions } from 'antd';
-import { validURL } from "../../../../services/utils";
 import { minuteFormatter } from "../../../../services/utils";
 import JSONPretty from 'react-json-pretty';
+import Moment from 'moment';
 
 const { Step } = Steps;
 const { Content } = Layout;
@@ -144,7 +144,7 @@ class JobDetail extends Component {
   }
 
   handleMinuteChange = (event) => {
-    if (event.target.value >= 60) {
+    if (event.target.value >= 5) {
       this.setState({ frequencyMins: event.target.value });
       this.setState({ frequency: event.target.value });
     }
@@ -171,8 +171,8 @@ class JobDetail extends Component {
     if (delay > 5) {
       delay = 5
     }
-    if (frequency < 60) {
-      frequency = 60;
+    if (frequency < 5) {
+      frequency = 5;
     }
 
     postJob({
@@ -293,7 +293,7 @@ class JobDetail extends Component {
                   <Form.Item label="URL Check Frequency">
                     <Slider
                       marks={marks}
-                      min={60}
+                      min={5}
                       max={2880}
                       name="frequency"
                       value={this.state.frequency}
@@ -304,7 +304,8 @@ class JobDetail extends Component {
                     />
                   </Form.Item>
                   <Form.Item label="or Minutes">
-                    <Input name="minutes" type="number" min={60} value={this.state.frequencyMins} onChange={this.handleMinuteChange} />
+                    <Input name="minutes" type="number" min={5} value={this.state.frequencyMins} onChange={this.handleMinuteChange} />
+                    { 'This job will next run ' + Moment().local().add(this.state.frequencyMins, 'minute').calendar() }
                   </Form.Item>
                   <Form.Item label="Delay (in Seconds, max 5)">
                     <Input name="delay" type="number" min={0} max={5} value={this.state.delay} onChange={this.handleChange} />
