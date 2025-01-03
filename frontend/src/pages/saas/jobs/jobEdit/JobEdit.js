@@ -20,13 +20,6 @@ const columns = [
   }
 ];
 
-const marks = {
-  60: 'Hourly',
-  720: '12 Hours',
-  1440: '24 Hours',
-  2880: '2 Days'
-};
-
 class JobEdit extends Component {
   constructor() {
     super()
@@ -57,14 +50,8 @@ class JobEdit extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  handleSliderChange = (event) => {
-    this.setState({ frequency: event });
-    //this.setState({ frequencyMins: event });
-  }
-
   handleMinuteChange = (event) => {
-    if (event.target.value >= 60) {
-      //this.setState({ frequencyMins: event.target.value });
+    if (event.target.value >= 1) {
       this.setState({ frequency: event.target.value });
     }
   }
@@ -93,7 +80,6 @@ class JobEdit extends Component {
         this.setState({ job_name: response.data.jobDetail.job_name });
         this.setState({ url: response.data.jobDetail.url });
         this.setState({ frequency: response.data.jobDetail.frequency });
-        //this.setState({ frequencyMins: response.data.jobDetail.frequency });
         this.setState({ diff_percent: response.data.jobDetail.diff_percent });
         this.setState({ xpath: response.data.jobDetail.xpath });
         this.setState({ job_type: response.data.jobDetail.job_type });
@@ -120,8 +106,8 @@ class JobEdit extends Component {
     if (delay > 5) {
       delay = 5
     }
-    if (frequency < 60) {
-      frequency = 60;
+    if (frequency < 5) {
+      frequency = 5;
     }
 
     putJob(this.props.match.params.job_id, {
@@ -179,21 +165,8 @@ class JobEdit extends Component {
                 <Form.Item label="URL" validateStatus={this.state.validUrlStatus} hasFeedback={this.state.validUrl}>
                   <Input name="url" value={this.state.url} placeholder="The website URL to monitor" onChange={this.handleChange} />
                 </Form.Item>
-                <Form.Item label="Check Frequency">
-                  <Slider
-                    marks={marks}
-                    min={60}
-                    max={2880}
-                    name="frequency"
-                    value={this.state.frequency}
-                    tipFormatter={minuteFormatter}
-                    onChange={this.handleSliderChange}
-                    step={10}
-                    style={{ 'marginLeft': '22px', 'marginRight': '22px' }}
-                  />
-                </Form.Item>
-                <Form.Item label="or Minutes" style={{ display: 'inline-block', width: '120px' }}>
-                  <Input name="minutes" type="number" min={60} value={this.state.frequency} onChange={this.handleMinuteChange} />
+                <Form.Item label="URL Check Frequency (Minutes)">
+                  <Input name="minutes" type="number" min={5} value={this.state.frequency} onChange={this.handleMinuteChange} />
                 </Form.Item>
                 { this.state.job_type === 0 && 
                     <Form.Item label="Change Percent" rules={[{ required: true }]}>

@@ -31,13 +31,6 @@ const steps = [
   },
 ];
 
-const marks = {
-  60: 'Hourly',
-  720: '12 Hours',
-  1440: '24 Hours',
-  2880: '2 Days'
-};
-
 const columns = [
   {
     title: 'Type',
@@ -67,8 +60,7 @@ class JobDetail extends Component {
       name: '',
       email: '',
       notifications: '',
-      frequency: 120,
-      frequencyMins: 120,
+      frequency: 60,
       diff_percent: 20,
       selectedRowKeys: [],
       validUrlStatus: "",
@@ -125,27 +117,11 @@ class JobDetail extends Component {
   }
 
   handleChange = (event) => {
-    /* TO DO: Not working correctly, moves cursor out of input box
-    if (event.target.name === 'url') {
-      var valid = validURL(event.target.value);
-      if (valid) {
-        this.setState({ validUrlStatus: 'success', validUrl: true });
-      } else {
-        this.setState({ validUrlStatus: 'error', validUrl: true });
-      }
-    }
-    */
     this.setState({ [event.target.name]: event.target.value });
   }
 
-  handleSliderChange = (event) => {
-    this.setState({ frequency: event });
-    this.setState({ frequencyMins: event });
-  }
-
   handleMinuteChange = (event) => {
-    if (event.target.value >= 60) {
-      this.setState({ frequencyMins: event.target.value });
+    if (event.target.value >= 1) {
       this.setState({ frequency: event.target.value });
     }
   }
@@ -171,8 +147,8 @@ class JobDetail extends Component {
     if (delay > 5) {
       delay = 5
     }
-    if (frequency < 60) {
-      frequency = 60;
+    if (frequency < 5) {
+      frequency = 5;
     }
 
     postJob({
@@ -290,21 +266,9 @@ class JobDetail extends Component {
                   layout="vertical"
                 >
                   {this.state.message && <Alert style={{ marginBottom: '20px', marginTop: '10px' }} message={this.state.message} type="error" showIcon />}
-                  <Form.Item label="URL Check Frequency">
-                    <Slider
-                      marks={marks}
-                      min={60}
-                      max={2880}
-                      name="frequency"
-                      value={this.state.frequency}
-                      tipFormatter={minuteFormatter}
-                      onChange={this.handleSliderChange}
-                      step={10}
-                      style={{ 'marginLeft': '22px', 'marginRight': '22px' }}
-                    />
-                  </Form.Item>
-                  <Form.Item label="or Minutes">
-                    <Input name="minutes" type="number" min={60} value={this.state.frequencyMins} onChange={this.handleMinuteChange} />
+                  
+                  <Form.Item label="URL Check Frequency (Minutes)">
+                    <Input name="minutes" type="number" min={5} value={this.state.frequency} onChange={this.handleMinuteChange} />
                   </Form.Item>
                   <Form.Item label="Delay (in Seconds, max 5)">
                     <Input name="delay" type="number" min={0} max={5} value={this.state.delay} onChange={this.handleChange} />

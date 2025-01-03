@@ -88,8 +88,8 @@ async function postJob(req, res, next) {
     var userid = users.getUserID(req);
     var filename = uniquefilename();
 
-    if (req.body.frequency < 60) {
-      req.body.frequency = 60;
+    if (req.body.frequency < 5) {
+      req.body.frequency = 5;
     }
     db.one('insert into jobs (job_name, url, user_id, frequency, next_run, latest_screenshot, job_type, xpath, delay)' +
       'values ($1, $2, $3, $4, current_timestamp + (' + req.body.frequency + ' * interval \'1 minute\'), $5, $6, $7, $8) returning *', [req.body.job_name, req.body.url, userid, req.body.frequency, filename, req.body.job_type, req.body.xpath, req.body.delay])
@@ -190,8 +190,8 @@ function putJobStatus(req, res, next) {
 async function putJob(req, res, next) {
   var userid = users.getUserID(req);
   var isValidUrl = await job_daemon.validUrl(req.body.url);
-  if (req.body.frequency < 60) {
-    req.body.frequency = 60;
+  if (req.body.frequency < 5) {
+    req.body.frequency = 5;
   }
   if (isValidUrl) {
     db.none('update jobs set job_name = $1, frequency = $2, diff_percent = $3, error_count = 0, latest_error = null, next_run = current_timestamp + ($2 * interval \'1 minute\'), url = $5, xpath = $6, delay = $7 '
