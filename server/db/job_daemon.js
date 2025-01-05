@@ -58,14 +58,17 @@ module.exports = {
   executeVisualJob,
   executeXPathJob,
   executeAPIJob,
+  executeHTMLJob,
   getJobCheck,
   getWebsiteScreenshot,
   getWebsiteXPath,
   getAPIResponse,
+  getWebsiteHTML,
   checkUrl,
   validUrl,
   previewXPathJob,
-  previewAPIJob
+  previewAPIJob,
+  previewHTMLJob
 }
 
 function checkUrl(req, res, next) {
@@ -86,6 +89,21 @@ async function previewXPathJob(req, res, next) {
       type: 'error'
     });
     logger.logError('previewXPathJob: ' + err);
+  }
+}
+
+
+async function previewHTMLJob(req, res, next) {
+  try {
+    var html = await getWebsiteHTML(req.query.url, 2);
+    res.status(200).json(html);
+  }
+   catch(err) {
+    res.status(500).json({
+      message: 'Error getting HTML page',
+      type: 'error'
+    });
+    logger.logError('previewHTMLJob: ' + err);
   }
 }
 
@@ -128,7 +146,7 @@ function getJobCheck(req, res, next) {
             db.none('update jobs set status = 2, latest_error = \'Over 10 errors, disabling automatic checks\' where job_id = $1', [job.job_id]);
             jobs_in_error++;
             //Send notification email that job is not working
-            notifications.sendTextMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "change");
+            notifications.sendTextMail(JSON.parse(notification.param_1), "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "change");
           } else {
             console.log("Checking job: " + job.job_id + " - " + job.job_name);
             if (job.job_type === 0) {
@@ -170,6 +188,8 @@ function runJob(req, res, next) {
         await executeXPathJob(job, run_type);
       } else if (job.job_type === 2) {
         await executeAPIJob(job, run_type);
+      } else if (job.job_type === 3) {
+        await executeHTMLJob(job, run_type);
       }
 
       res.status(200).json({
@@ -189,7 +209,7 @@ async function executeXPathJob(job, run_type) {
 
     // Fetch xPath value from URL
     var gotText = await getWebsiteXPath(job.url, job.xpath, job.delay);
-    var diff = jsdiff.diffWords(gotText, job.latest_screenshot);
+    var diff = jsdiff.diffWords(gotText, job.latest_response);
     var formattedText = "";
     
     diff.forEach(function(part){
@@ -213,9 +233,9 @@ async function executeXPathJob(job, run_type) {
 
       db.task('grouped-activity', t => {
         return t.batch([
-          t.none('insert into history (job_id, change_percent, screenshot, diff_screenshot, source_screenshot, status, run_type)' +
-            'values ($1, $2, $3, $4, $5, $6, $7)', [job.job_id, diff_percent, gotText, formattedText, job.latest_screenshot, 2, run_type]),
-          t.none('update jobs set run_Count = run_count + 1, latest_screenshot = $2, last_run = now(), latest_success = now(), next_run = CASE WHEN $4 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, latest_diff_percent = $3 ' +
+          t.none('insert into history (job_id, change_percent, response, diff_response, source_response, status, run_type)' +
+            'values ($1, $2, $3, $4, $5, $6, $7)', [job.job_id, diff_percent, gotText, formattedText, job.latest_response, 2, run_type]),
+          t.none('update jobs set run_Count = run_count + 1, latest_response = $2, last_run = now(), latest_success = now(), next_run = CASE WHEN $4 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, latest_diff_percent = $3 ' +
             'where job_id = $1', [job.job_id, gotText, diff_percent, run_type]),
           t.any('select * from user_notifications inner join job_notifications using (notification_id) where job_id = $1', job.job_id)
         ]);
@@ -230,15 +250,15 @@ async function executeXPathJob(job, run_type) {
               title: job.job_name,
               percent_change: diff_percent + "%",
               url: job.url,
-              screenshot: job.latest_screenshot,
+              screenshot: job.latest_response,
               screenshot_diff: gotText
             };
             html = notifications.replaceTextWithVariables(html, properties);
 
             user_notifications.forEach(notification => {
-              if (notification.type == 'email') {
-                notifications.sendTextMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, job.latest_screenshot, formattedText, "change");
-              }
+              //if (notification.type == 'email') {
+                notifications.sendTextMail(JSON.parse(notification.param_1), "Change detected on " + job.job_name, "Change detected on " + job.job_name, html);
+              //}
             });
           }
           catch (err) {
@@ -284,7 +304,7 @@ async function executeAPIJob(job, run_type) {
     var oJSON = await getAPIResponse(job.url);
     var sJSON = JSON.stringify(oJSON);
 
-    var sourceJSON = JSON.parse(job.latest_screenshot);
+    var sourceJSON = JSON.parse(job.latest_response);
     var diff = jsdiff.diffJson(sourceJSON, oJSON);
     var formattedText = "";
 
@@ -309,9 +329,9 @@ async function executeAPIJob(job, run_type) {
 
       db.task('grouped-activity', t => {
         return t.batch([
-          t.none('insert into history (job_id, change_percent, screenshot, diff_screenshot, source_screenshot, status, run_type)' +
-            'values ($1, $2, $3, $4, $5, $6, $7)', [job.job_id, diff_percent, sJSON, formattedText, job.latest_screenshot, 2, run_type]),
-          t.none('update jobs set run_Count = run_count + 1, latest_screenshot = $2, last_run = now(), latest_success = now(), next_run = CASE WHEN $4 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, latest_diff_percent = $3 ' +
+          t.none('insert into history (job_id, change_percent, response, diff_response, source_response, status, run_type)' +
+            'values ($1, $2, $3, $4, $5, $6, $7)', [job.job_id, diff_percent, sJSON, formattedText, job.latest_response, 2, run_type]),
+          t.none('update jobs set run_Count = run_count + 1, latest_response = $2, last_run = now(), latest_success = now(), next_run = CASE WHEN $4 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, latest_diff_percent = $3 ' +
             'where job_id = $1', [job.job_id, sJSON, diff_percent, run_type]),
           t.any('select * from user_notifications inner join job_notifications using (notification_id) where job_id = $1', job.job_id)
         ]);
@@ -326,15 +346,16 @@ async function executeAPIJob(job, run_type) {
               title: job.job_name,
               percent_change: diff_percent + "%",
               url: job.url,
-              screenshot: job.latest_screenshot,
+              screenshot: job.latest_response,
               screenshot_diff: formattedText
             };
             html = notifications.replaceTextWithVariables(html, properties);
 
             user_notifications.forEach(notification => {
-              if (notification.type == 'email') {
-                notifications.sendTextMail(notification.param_1, "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, job.latest_screenshot, formattedText, "change");
-              }
+              //if (notification.type == 'email') {
+                //console.log(notification);
+                notifications.sendTextMail(JSON.parse(notification.param_1), "Change detected on " + job.job_name, "Change detected on " + job.job_name, html);
+              //}
             });
           }
           catch (err) {
@@ -364,6 +385,99 @@ async function executeAPIJob(job, run_type) {
 
       db.none('insert into history (job_id, log, change_percent, status, run_type)' +
         'values ($1, $2, $3, $4, $5)', [job.job_id, "Error, unable to get API data", 0, 0, run_type]);
+    }
+
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
+async function executeHTMLJob(job, run_type) {
+  try {
+    var diff_percent = 0;
+
+    // Fetch Page HTML from URL
+    var html = await getWebsiteHTML(job.url, job.delay);
+    var diff = jsdiff.diffWords(html, job.latest_response);
+    var formattedText = "";
+    
+    diff.forEach(function(part){
+      // green for additions, red for deletions
+      // grey for common parts
+        if (part.added) {
+          formattedText += "<span style='background-color: #90EE90'>" + part.value + "</span>";
+        } else if (part.removed) {
+          formattedText += "<span style='background-color: #FF6347'>" + part.value + "</span>";
+        } else {
+          formattedText += "<span style='background-color: #FFFFFF'>" + part.value + "</span>";
+        }
+    });
+
+    if (html && diff.length > 1) {
+      diff_percent = 100;
+    }
+
+    if (html && (diff_percent > 0 || run_type === "Test")) {
+      console.log("Changes detected ... saving to history and sending notifications ...");
+
+      db.task('grouped-activity', t => {
+        return t.batch([
+          t.none('insert into history (job_id, change_percent, response, diff_response, source_response, status, run_type)' +
+            'values ($1, $2, $3, $4, $5, $6, $7)', [job.job_id, diff_percent, html, formattedText, job.latest_response, 2, run_type]),
+          t.none('update jobs set run_Count = run_count + 1, latest_response = $2, last_run = now(), latest_success = now(), next_run = CASE WHEN $4 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, latest_diff_percent = $3 ' +
+            'where job_id = $1', [job.job_id, html, diff_percent, run_type]),
+          t.any('select * from user_notifications inner join job_notifications using (notification_id) where job_id = $1', job.job_id)
+        ]);
+      })
+        .then(function (data) {
+          try {
+            var user_notifications = data[2];
+            // Used for email notifications
+            var html = notifications.getXPathChangeHtml();
+            //replace handlebars
+            var properties = {
+              title: job.job_name,
+              percent_change: diff_percent + "%",
+              url: job.url,
+              screenshot: job.latest_response,
+              screenshot_diff: formattedText
+            };
+            html = notifications.replaceTextWithVariables(html, properties);
+
+            user_notifications.forEach(notification => {
+              //if (notification.type == 'email') {
+                notifications.sendTextMail(JSON.parse(notification.param_1), "Change detected on " + job.job_name, "Change detected on " + job.job_name, html);
+              //}
+            });
+          }
+          catch (err) {
+            console.error(err);
+          }
+        })
+        .catch(function (err) {
+          logger.logError('executeHTMLJob -> Send user notifications: ' + err);
+        });
+
+    } else if (html) {
+      console.log("No changes detected");
+
+      db.task('grouped-activity', t => {
+        return t.batch([
+          t.none('insert into history (job_id, change_percent, log, status, run_type)' +
+            'values ($1, $2, $3, $4, $5)', [job.job_id, diff_percent, "No changes detected", 1, run_type]),
+          t.none('update jobs set run_Count = run_count + 1, last_run = now(), next_run = CASE WHEN $3 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, latest_diff_percent = $2 ' +
+            'where job_id = $1', [job.job_id, diff_percent, run_type])
+        ]);
+      });
+    } else {
+      console.log("Error: HTML unable to be captured");
+
+      db.none('update jobs set last_run = now(), next_run = CASE WHEN $2 = \'Cron\' THEN next_run + (frequency * interval \'1 minute\') ELSE now() + (frequency * interval \'1 minute\') END, error_count = error_count + 1 ' +
+        'where job_id = $1', [job.job_id, run_type])
+
+      db.none('insert into history (job_id, log, change_percent, status, run_type)' +
+        'values ($1, $2, $3, $4, $5)', [job.job_id, "Error, unable to capture HTML.", 0, 0, run_type]);
     }
 
   } catch (err) {
@@ -401,18 +515,46 @@ async function getWebsiteXPath(url, xpath, delay) {
 }
 
 
+async function getWebsiteHTML(url, delay) {
+  try {
+    const browser = await chromium.puppeteer.launch({
+      args: chrome_args,
+      executablePath: process.env.CHROME_BIN || await chromium.executablePath,
+      headless: true,
+      defaultViewport: null
+    });
+
+    var page, content;
+
+    await Promise.all([
+      // Your Puppeteer operations
+      page = await browser.newPage(),
+      await page.goto(url, { waitUntil: 'networkidle0' }),
+
+      //Wait slightly longer just in case
+      await new Promise(resolve => setTimeout(resolve, parseInt(delay * 1000))),
+      content = page.content()
+    ]);
+    
+    await page.close();
+    await browser.close();
+    return content;
+  } catch (err) {
+    console.log('Unable to get website html: ' + err);
+    return err;
+  }
+}
+
 async function getAPIResponse(url) {
   try {
     const response = await fetch(url);
     const data = await response.json();
     return data;
   } catch (err) {
-    console.log('Unable to get website XPath: ' + err);
+    console.log('Unable to get website API Response: ' + err);
     return "Error";
   }
 }
-
-
 
 async function executeVisualJob(job, diff_percent, run_type) {
   try {
@@ -465,15 +607,11 @@ async function executeVisualJob(job, diff_percent, run_type) {
           html = notifications.replaceTextWithVariables(html, properties);
 
           user_notifications.forEach(notification => {
-            //if (notification.type == 'smtp' ) {
               notifications.sendVisualMail(JSON.parse(notification.param_1), "Change detected on " + job.job_name, "Change detected on " + job.job_name, html, "screenshots/" + job.job_id + "/" + newfilename + "_diff.png", "screenshots/" + job.job_id + "/" + newfilename + "_small.png", "change");
-            //}
           });
 
           // Delete old "latest_screenshot" since we just updated it.
           filehandler.deleteFile("screenshots/" + job.job_id + "/" + filename1 + ".png");
-
-
         })
         .catch(function (err) {
           logger.logError('executeVisualJob -> Send user notifications: ' + err);

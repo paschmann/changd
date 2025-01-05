@@ -62,7 +62,7 @@ class JobDetail extends Component {
     resetJob(job_id, { url: this.state.jobDetail.url, xpath: this.state.jobDetail.xpath, job_type: this.state.jobDetail.job_type }).then(response => {
       this.getJobdetail();
     }).catch(error => {
-      this.setState({ message: 'Error, unable to capture inital image, please check the URL' });
+      this.setState({ message: 'Error, unable to capture reference, please check the URL' });
     }).finally(() => {
       this.setState({ loading: false });
     })
@@ -84,7 +84,8 @@ class JobDetail extends Component {
           screenshot: response.data.jobDetail.latest_screenshot,
           status: 3,
           change_percent: 0,
-          job_type: response.data.jobDetail.job_type
+          job_type: response.data.jobDetail.job_type,
+          response: response.data.jobDetail.latest_response
         }
         response.data.jobHistory.unshift(current);
         this.setState({ rawHistory: response.data.jobHistory });
@@ -107,7 +108,6 @@ class JobDetail extends Component {
         // Not displaying correctly due to bad logic ....
         var entries = 0;
         var consolidated = 0;
-        var errors = 0;
         jobHistory.forEach(function (item, index) {
 
           if ((index > 1 && index < jobHistory.length - 1) && (item.status === 1 && (jobHistory[index + 1].status === 1 || consolidated_history[entries - 1].status === 4))) {
@@ -116,7 +116,6 @@ class JobDetail extends Component {
             consolidated_history[entries - 1]["datetime"] = (consolidated + 1) + " checks with no changes";
           } else {
             consolidated_history.push(item);
-            errors = 0;
             consolidated = 0;
             entries++;
           }
@@ -173,8 +172,8 @@ class JobDetail extends Component {
         )
       },
       {
-        title: this.state.jobDetail?.job_type === 0 ? "Screenshot" : "Reference Text",
-        dataIndex: 'screenshot',
+        title: this.state.jobDetail?.job_type === 0 ? "Screenshot" : "Reference",
+        dataIndex: this.state.jobDetail?.job_type === 0 ? "screenshot" : "response",
         width: this.state.jobDetail?.job_type === 0 ? "120px" : "40%",
         render: (text, record) => (
           <div>
@@ -197,11 +196,28 @@ class JobDetail extends Component {
                 rows: 3,
                 expandable: true
               }}>
-                {record.screenshot}
+                {record.response}
               </Paragraph>
             }
-            {(record.status === 2 || record.status === 3) && record.job_type === 2 && 
-              <JSONPretty key="json" id="json-pretty" data={ record.screenshot }></JSONPretty>
+            {(record.status === 2 || record.status === 3) && record.job_type === 2 &&
+              <Paragraph 
+                key = "paragraph"
+                ellipsis={{
+                rows: 3,
+                expandable: true
+              }}>
+                <JSONPretty key="json" id="json-pretty" data={ record.response }></JSONPretty>
+              </Paragraph>
+            }
+            {(record.status === 2 || record.status === 3) && record.job_type === 3 && 
+              <Paragraph 
+                key = "paragraph"
+                ellipsis={{
+                rows: 3,
+                expandable: true
+              }}>
+                {record.response}
+              </Paragraph>
             }
           </div>
         )
@@ -255,26 +271,33 @@ class JobDetail extends Component {
               <Row style={{ 'paddingTop': '20px' }}>
                 <Descriptions size="small" column={1}>
                   <Descriptions.Item key="url" label="URL"><a target="_blank" rel="noreferrer" href={this.state.jobDetail?.url}>{this.state.jobDetail?.url}</a></Descriptions.Item>
+                  
                   <Descriptions.Item key="check" label="Check Frequency">{this.state.jobDetail?.frequency} minutes</Descriptions.Item>
-                  { this.state.jobDetail?.job_type !== 2 && <Descriptions.Item key="delay" label="Delay">{this.state.jobDetail?.delay} seconds</Descriptions.Item> }
 
-                  {/* Job specific */}
-                  { this.state.jobDetail?.job_type === 0 && 
-                    <Descriptions.Item key="change" label="Notify on">
-                      {
-                        formatPercentToWords(this.state.jobDetail?.diff_percent)
-                      }
-                    </Descriptions.Item>
+                  { 
+                    (this.state.jobDetail?.job_type === 0 || this.state.jobDetail?.job_type === 1 || this.state.jobDetail?.job_type === 3 ) && 
+                    <Descriptions.Item key="delay" label="Delay">{this.state.jobDetail?.delay} seconds</Descriptions.Item> 
                   }
-                  { this.state.jobDetail?.job_type === 1 && 
-                    <Descriptions.Item key="change" label="XPath">
-                      {
-                        this.state.jobDetail?.xpath
-                      }
-                    </Descriptions.Item>
+
+                  { 
+                    this.state.jobDetail?.job_type === 0 && 
+                    <Descriptions.Item key="change" label="Job Type">Visual Snapshot</Descriptions.Item>
                   }
-                  { this.state.jobDetail?.job_type === 2 && 
-                    <Descriptions.Item key="change" label="API">True</Descriptions.Item>
+                  { 
+                    this.state.jobDetail?.job_type === 0 && 
+                    <Descriptions.Item key="change" label="Notify on"> { formatPercentToWords(this.state.jobDetail?.diff_percent) }</Descriptions.Item>
+                  }
+                  { 
+                    this.state.jobDetail?.job_type === 1 && 
+                    <Descriptions.Item key="change" label="Job Type"> { 'XPath: ' + this.state.jobDetail?.xpath }</Descriptions.Item>
+                  }
+                  {
+                    this.state.jobDetail?.job_type === 2 && 
+                    <Descriptions.Item key="change" label="Job Type">API</Descriptions.Item>
+                  }
+                  { 
+                    this.state.jobDetail?.job_type === 3 && 
+                    <Descriptions.Item key="change" label="Job Type">Page</Descriptions.Item>
                   }
 
                   <Descriptions.Item key="notifications" label="Notifications">
@@ -282,6 +305,10 @@ class JobDetail extends Component {
                       this.state.jobNotifications?.map(notification => (
                         <div key={notification.notification_id} style={{ 'marginRight': '20px' }}>{notification.name + ' (' + notification.type + ')'}</div>
                       ))
+                    }
+                    {
+                      this.state.jobNotifications?.length === 0 &&
+                      <div>None</div>
                     }
                   </Descriptions.Item>
                 </Descriptions>

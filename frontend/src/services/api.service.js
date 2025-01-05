@@ -52,6 +52,10 @@ export const getXPathPreview = ( url, xpath ) => {
     return http.get("/preview/xpath?url=" + url + "&xpath=" + xpath, { headers: getAuthHeader() });
 }
 
+export const getHTMLPreview = ( url, xpath ) => {
+    return http.get("/preview/html?url=" + url, { headers: getAuthHeader() });
+}
+
 export const getAPIPreview = ( url, xpath ) => {
     return http.get("/preview/api?url=" + url, { headers: getAuthHeader() });
 }

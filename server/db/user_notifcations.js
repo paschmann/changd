@@ -13,7 +13,7 @@ module.exports = {
 
 function getNotifcations(req, res, next) {
   var userid = users.getUserID(req);
-  db.any('select * from user_notifications where user_id = $1', [ userid])
+  db.any('select name, type, notification_id from user_notifications where user_id = $1', [ userid])
     .then(function (data) {
       res.status(200).json(data);
     })

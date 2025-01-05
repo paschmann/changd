@@ -67,7 +67,8 @@ create table if not exists jobs
 	latest_success timestamp with time zone,
 	delay integer default 2,
 	xpath varchar,
-	job_type integer default 0
+	job_type integer default 0,
+	latest_response varchar
 );
 
 alter sequence jobs_job_id_seq2 owned by jobs.job_id;
@@ -88,6 +89,9 @@ create table if not exists history
 	job_id integer not null,
 	diff_screenshot varchar,
 	source_screenshot varchar,
+	response varchar,
+	diff_response varchar,
+	source_response varchar,
 	log varchar,
 	status integer,
 	run_type varchar

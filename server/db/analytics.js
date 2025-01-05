@@ -29,6 +29,7 @@ function getUsage(req, res, next) {
              history.status = 1
               AND datetime >= now() - '12 month'::interval
              AND    datetime <= now()
+             AND date_part('year', datetime) = date_part('year', CURRENT_DATE)
             AND user_id = $1
              GROUP  BY 1
              ) t USING (date)
@@ -49,6 +50,7 @@ function getUsage(req, res, next) {
            history.status = 2
             AND datetime >= now() - '12 month'::interval
            AND    datetime <= now()
+           AND date_part('year', datetime) = date_part('year', CURRENT_DATE)
           AND user_id = $1
            GROUP  BY 1
            ) t USING (date)
@@ -63,6 +65,7 @@ function getUsage(req, res, next) {
         return next(err);
       });
   } else {
+    // Daily
     db.task('grouped-activity', t => {
       return t.batch([
         t.any(`
@@ -83,9 +86,10 @@ function getUsage(req, res, next) {
                       AND datetime >= now() - '30 day'::interval
                      AND    datetime <= now()
                      AND user_id = $1
+                     AND date_part('year', datetime) = date_part('year', CURRENT_DATE)
                      GROUP  BY 1
                      ) t USING (date)
-                  ORDER  BY date`, [userid]),
+                  `, [userid]),
         t.any(`SELECT *
         FROM  (
            SELECT to_char(day::date, 'dd') as date, 'Changes' as name
@@ -102,10 +106,11 @@ function getUsage(req, res, next) {
            history.status = 2
             AND datetime >= now() - '30 day'::interval
            AND    datetime <= now()
+           AND date_part('year', datetime) = date_part('year', CURRENT_DATE)
             AND user_id = $1
            GROUP  BY 1
            ) t USING (date)
-        ORDER  BY date`, [userid]),
+        `, [userid]),
       ]);
     })
       .then(function (data) {

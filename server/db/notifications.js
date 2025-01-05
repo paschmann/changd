@@ -110,7 +110,7 @@ function sendVisualMail(notification, body, subject, htmlbody, screenshot_diff, 
    }
 }
 
-function sendTextMail(recipient, body, subject, htmlbody, type) {
+function sendTextMailOld(recipient, body, subject, htmlbody, type) {
    var attachments = [];
    attachments = getEmailLogos();
 
@@ -122,6 +122,24 @@ function sendTextMail(recipient, body, subject, htmlbody, type) {
       html: htmlbody,
       attachments: attachments
    });
+}
+
+
+function sendTextMail(notification, body, subject, htmlbody) {
+   var attachments = [];
+   try {
+      attachments = getEmailLogos();
+
+      notification.required.subject = subject;
+      notification.required.text = body;
+      notification.optional.html = htmlbody;
+      notification.optional.attachments = attachments;
+      notification.optional.smtpSecure = false;
+
+      Reach.send(notification);
+   } catch (err) {
+      console.log(err);
+   }
 }
 
 function getResetPasswordHtml() {

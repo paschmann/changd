@@ -46,6 +46,7 @@ router.get('/jobs/:job_id/run', users.validateJWT, job_daemon.runJob);
 router.get('/util/checkurl', users.validateJWT, job_daemon.checkUrl);
 router.get('/preview/xpath', users.validateJWT, job_daemon.previewXPathJob);
 router.get('/preview/api', users.validateJWT, job_daemon.previewAPIJob);
+router.get('/preview/html', users.validateJWT, job_daemon.previewHTMLJob);
 
 router.get('/reach/providers', notifications.getReachProviders);
 router.get('/reach/providers/:provider/parameters', notifications.getReachParameters);

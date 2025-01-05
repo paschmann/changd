@@ -56,7 +56,7 @@ function getJobDetail(req, res, next) {
     return t.batch([
       t.one('select * from jobs where job_id = $1', [req.params.job_id]),
       t.any('select * from history where job_id = $1 order by datetime desc limit 50', [req.params.job_id]),
-      t.any('select * from user_notifications inner join job_notifications using (notification_id) where job_id = $1', [req.params.job_id]),
+      t.any('select notification_id, name, type from user_notifications inner join job_notifications using (notification_id) where job_id = $1', [req.params.job_id]),
     ]);
   })
     .then(function (data) {
@@ -91,8 +91,8 @@ async function postJob(req, res, next) {
     if (req.body.frequency < 5) {
       req.body.frequency = 5;
     }
-    db.one('insert into jobs (job_name, url, user_id, frequency, next_run, latest_screenshot, job_type, xpath, delay)' +
-      'values ($1, $2, $3, $4, current_timestamp + (' + req.body.frequency + ' * interval \'1 minute\'), $5, $6, $7, $8) returning *', [req.body.job_name, req.body.url, userid, req.body.frequency, filename, req.body.job_type, req.body.xpath, req.body.delay])
+    db.one('insert into jobs (job_name, url, user_id, frequency, next_run, job_type, xpath, delay)' +
+      'values ($1, $2, $3, $4, current_timestamp + (' + req.body.frequency + ' * interval \'1 minute\'), $5, $6, $7) returning *', [req.body.job_name, req.body.url, userid, req.body.frequency, req.body.job_type, req.body.xpath, req.body.delay])
       .then(async function (data) {
         req.body.notifications.forEach(notification_id => {
           //insert into notifications table
@@ -106,18 +106,26 @@ async function postJob(req, res, next) {
         });
 
         if (req.body.job_type === "0") {
-          db.none('update jobs set diff_percent = $1 where job_id = $2', [req.body.diff_percent, data.job_id]);
+          db.none('update jobs set diff_percent = $1, latest_screenshot = $2 where job_id = $3', [req.body.diff_percent, filename, data.job_id]);
           job_daemon.getWebsiteScreenshot(req.body.url, "screenshots/" + data.job_id + "/", filename);
         } else if (req.body.job_type === "1") {
           //Get XPath Ref Value write to latest screenshot
           var value = await job_daemon.getWebsiteXPath(req.body.url, req.body.xpath);
           //Update job record to have latest xpath value
-          db.none('update jobs set latest_screenshot = $1 where job_id = $2', [value, data.job_id]);
+          db.none('update jobs set latest_response = $1 where job_id = $2', [value, data.job_id]);
         } else if (req.body.job_type === "2") {
           //Get API response write to latest screenshot
           var value = await job_daemon.getAPIResponse(req.body.url);
           //Update job record to have latest xpath value
-          db.none('update jobs set latest_screenshot = $1 where job_id = $2', [JSON.stringify(value), data.job_id]);
+          db.none('update jobs set latest_response = $1 where job_id = $2', [JSON.stringify(value), data.job_id]);
+        } else if (req.body.job_type === "3") {
+          // If we already have a response using the preview on the UI, lets use it.
+          if (req.body.pageresponse) {
+            db.none('update jobs set latest_response = $1 where job_id = $2', [req.body.pageresponse, data.job_id]);
+          } else {
+            var value = await job_daemon.getWebsiteHTML(req.body.url);
+            db.none('update jobs set latest_response = $1 where job_id = $2', [value, data.job_id]);
+          }
         }
       })
       .catch(function (err) {
@@ -153,10 +161,17 @@ async function resetJob(req, res, next) {
     } else if (req.body.job_type == 2) {
       result = await job_daemon.getAPIResponse(req.body.url);
       reference = result;
-    }
+    } else if (req.body.job_type == 3) {
+      result = await job_daemon.getWebsiteHTML(req.body.url);
+      reference = result;
+    } 
 
     if (result) {
-      db.none('update jobs set latest_screenshot = $1, next_run = now() + (frequency * interval \'1 minute\') where job_id = $2', [reference, req.params.job_id]);
+      if (req.body.job_type === 0) {
+        db.none('update jobs set latest_screenshot = $1, next_run = now() + (frequency * interval \'1 minute\') where job_id = $2', [reference, req.params.job_id]);
+      } else {
+        db.none('update jobs set latest_response = $1, next_run = now() + (frequency * interval \'1 minute\') where job_id = $2', [reference, req.params.job_id]);
+      }
       res.status(200).json({
         message: 'Reference updated',
         type: 'success'

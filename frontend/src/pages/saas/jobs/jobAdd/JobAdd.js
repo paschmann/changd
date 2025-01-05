@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Breadcrumb } from 'antd';
-import { postJob, getNotifications, getXPathPreview, getAPIPreview } from "../../../../services/api.service";
+import { postJob, getNotifications, getXPathPreview, getAPIPreview, getHTMLPreview } from "../../../../services/api.service";
 import { Link } from "react-router-dom"
 import { Steps, Button, message, Layout, Form, Input, Slider, Row, Select, Table, Spin, Alert, Tabs, Descriptions } from 'antd';
 import { minuteFormatter } from "../../../../services/utils";
@@ -98,6 +98,19 @@ class JobDetail extends Component {
       })
   }
 
+  getPageData() {
+    this.setState({ loading: true });
+    getHTMLPreview(this.state.url).then(response => {
+      if (response) {
+        this.setState({ pageresponse: response.data });
+      }
+    }).catch(error => {
+      this.setState({ pageresponse: "Error" });
+    }).finally(() => {
+      this.setState({ loading: false });
+    })
+  }
+
   getXPathData() {
     this.setState({ loading: true });
     getXPathPreview(this.state.url, this.state.xpath).then(response => {
@@ -125,16 +138,6 @@ class JobDetail extends Component {
   }
 
   handleChange = (event) => {
-    /* TO DO: Not working correctly, moves cursor out of input box
-    if (event.target.name === 'url') {
-      var valid = validURL(event.target.value);
-      if (valid) {
-        this.setState({ validUrlStatus: 'success', validUrl: true });
-      } else {
-        this.setState({ validUrlStatus: 'error', validUrl: true });
-      }
-    }
-    */
     this.setState({ [event.target.name]: event.target.value });
   }
 
@@ -183,7 +186,8 @@ class JobDetail extends Component {
       diff_percent: this.state.diff_percent,
       job_type: this.state.jobType,
       xpath: this.state.xpath,
-      delay: delay
+      delay: delay,
+      latest_response: this.state.pageresponse
     })
       .then(response => {
         if (response.status === 200) {
@@ -277,6 +281,13 @@ class JobDetail extends Component {
                         <Descriptions.Item key="apiresponse" label="Content"></Descriptions.Item>
                       </Descriptions>
                       <JSONPretty id="json-pretty" data={ this.state.apiresponse }></JSONPretty>
+                    </TabPane>
+
+                    <TabPane tab="Page" key="3" onTabClick={this.handleChangeType}>
+                      <Button type="primary" onClick={() => this.getPageData()}>Preview Page</Button>
+                      <Descriptions size="small" column={1}  style={{ 'paddingTop': '20px' }}>
+                        <Descriptions.Item key="xpathresponse" label="Content">{this.state.pageresponse}</Descriptions.Item>
+                      </Descriptions>
                     </TabPane>
 
                   </Tabs>
