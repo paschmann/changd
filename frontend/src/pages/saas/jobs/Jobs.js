@@ -93,7 +93,7 @@ class Jobs extends Component {
             {record.job_type === 0 && <Tag color="gold">Visual</Tag>}
             {record.job_type === 1 && <Tag color="lime">XPath</Tag>}
             {record.job_type === 2 && <Tag color="green">JSON</Tag>}
-            {record.job_type === 3 && <Tag color="green">Page</Tag>}
+            {record.job_type === 3 && <Tag color="yellow">Page</Tag>}
           </Space>
         ),
         sorter: (a, b) => a.job_type - b.job_type
